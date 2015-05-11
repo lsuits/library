@@ -22,27 +22,16 @@
  * @copyright  2014 LSU
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
 defined('MOODLE_INTERNAL') || die;
 
 require_once ($CFG->dirroot.'/course/moodleform_mod.php');
-    $PAGE->requires->js('/mod/library/jello.js');
 
 class mod_library_mod_form extends moodleform_mod {
-
     function definition() {
-
         $mform = $this->_form;
-
         $mform->addElement('header', 'generalhdr', get_string('general'));
         $this->add_intro_editor(false, get_string('librarytext', 'library'));
-
         $this->standard_coursemodule_elements();
-
-//-------------------------------------------------------------------------------
-// buttons
         $this->add_action_buttons(true, false, null);
-
     }
-
 }

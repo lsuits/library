@@ -25,7 +25,6 @@
 
 require_once("../../config.php");
 require_once(dirname(__FILE__).'/lib.php');
-    $PAGE->requires->js('/mod/library/jello.js');
 
 $id = optional_param('id',0,PARAM_INT);    // Course Module ID, or
 $l = optional_param('l',0,PARAM_INT);     // Label ID
@@ -57,9 +56,6 @@ if ($id) {
         print_error('invalidcoursemodule');
     }
 }
-echo 'hello';
+
 require_login($course, true, $cm);
-
-//redirect("$CFG->wwwroot/course/view.php?id=$course->id");
-
 

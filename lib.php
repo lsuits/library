@@ -58,6 +58,7 @@ function get_library_name($library) {
  */
 function library_add_instance($library) {
     global $DB;
+    $library->intro = '';
     $library->name = get_library_name($library);
     $library->timemodified = time();
     return $DB->insert_record("library", $library);
@@ -74,7 +75,7 @@ function library_add_instance($library) {
  */
 function library_update_instance($library) {
     global $DB;
-
+    $library->intro = '';
     $library->name = get_library_name($library);
     $library->timemodified = time();
     $library->id = $library->instance;
@@ -119,7 +120,6 @@ function library_delete_instance($id) {
  */
 function library_get_coursemodule_info($coursemodule) {
     global $DB, $PAGE;
-    $PAGE->requires->js('/mod/library/jello.js');
     if ($library = $DB->get_record('library', array('id'=>$coursemodule->instance), 'id, name, intro, introformat')) {
         if (empty($library->name)) {
             // library name missing, fix it
@@ -131,8 +131,8 @@ function library_get_coursemodule_info($coursemodule) {
         // no filtering hre because this info is cached and filtered later
         $info->content = format_module_intro('library', $library, $coursemodule->id, false);
         
-$PAGE->requires->js_init_call('M.mod_library.init'); 
-$jsmodule = array(
+        $PAGE->requires->js_init_call('M.mod_library.init'); 
+        $jsmodule = array(
                 'name' => 'mod_library',
                 'fullpath' => '/mod/library/module.js',
                 'requires' => array('node', 'moodle-core-notification')); //on this line you are loading three other YUI modules
@@ -150,44 +150,53 @@ $jsmodule = array(
 }
 
 /**
- * This will provide summary info about the user's grade in the subcourse below the link on
- * the course/view.php page
+ *
+ *
+ * https://github.com/mudrd8mz/moodle-mod_subcourse/blob/master/lib.php
  *
  * @param cm_info $cm
  * @return void
  */
 function mod_library_cm_info_view(cm_info $cm) {
-   global $PAGE;
-    $PAGE->requires->js('/mod/library/jello.js');
+   global $PAGE, $CFG;
     $html = '
+        <style>
+.btn {
+  -webkit-border-radius: 0;
+  -moz-border-radius: 0;
+  border-radius: 0px;
+  text-shadow: 1px 1px 3px #666666;
+  -webkit-box-shadow: 0px 1px 3px #000000;
+  -moz-box-shadow: 0px 1px 3px #000000;
+  box-shadow: 0px 1px 3px #000000;
+  font-family: Arial;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: bold;
+  background: #472F92;
+  padding: 3px 7px 4px 6px;
+  border: solid #641f8c 1px;
+  text-decoration: none;
+}
 
-<h1><strong>Library Resources</strong></h1>
+.btn:hover {
+  background: #b59bdb;
+  text-decoration: none;
+}
+</style>
+<h3><strong>Library Resources</strong></h3>
 
 <table>
    <tbody>
       <tr>
-         <td style="float:right"><a href="http://askus.lib.lsu.edu/browse.php"><img src="http://delliott.lsu.edu/mdl27/mod/library/pix/ask.png" alt="FAQ" border="0"></a></td>
-         <td><strong><a href="http://askus.lib.lsu.edu/browse.php" target="_blank">Frequently Asked Questions</a></strong></td>
-      </tr>
-      <tr>
-         <td style="float:right"><a href="http://askus.lib.lsu.edu/"><img src="http://delliott.lsu.edu/mdl27/mod/library/pix/email.png" alt="eMail Reference" border="0"></a></td>
-         <td><p><a href="#" onclick="u=location.href;x=window;e=x.encodeURIComponent;w=open(\'http://lsu.libanswers.com/askr.php?i=955&amp;uri=\'+e(u),\'add\',\'width=520,height=600,location=0,menubar=0,toolbar=0,status=0,scrollbars,resizable\');return false"><b>Email us a question:  </b></a>You may submit questions 24 hours a day, 7 days a week.</p> </a>
-         </td>
-      </tr>
-      <tr>
-         <td style="float:right"><img src="http://delliott.lsu.edu/mdl27/mod/library/pix/phone.png" alt="Phone Reference" border="0"></td>
-         <td><strong>Telephone Research Assistance: Call us at <strong>(225) 578-8875</strong> during  <a href="http://www.lib.lsu.edu/hours/" target="_blank">Research Desk hours</a></strong></td>
-      </tr>
-      <tr>
-         <td style="float:right;"><img src="http://delliott.lsu.edu/mdl27/mod/library/pix/text.png" alt="Text Reference" border="0"></td>
-         <td><strong>Text: (225) 245-3667</strong></td>
+         <td style="float:right; padding: 3px;"><a href="http://askus.lib.lsu.edu/"><img src="' . $CFG->wwwroot  . '/mod/library/pix/LaptopUser_icon2.svg" padding = "2px" width = "50px" alt="Ask the Library" border="0"></a></td>
+         <td><strong>  For assistance, call (225-578-8875), <a href="http://askus.lib.lsu.edu/" target="_blank"> chat, text, or email a librarian </a></strong></td>
       </tr>
    </tbody>
 </table>
-<p><button class="yui3-button btn-show clickedcell" onclick="jello()">Chat with a librarian</button></p>
+<p></p>
 ';
     $cm->set_content($html);
-
 }
 
 /**
@@ -226,158 +235,14 @@ function library_supports($feature) {
         case FEATURE_IDNUMBER:                return false;
         case FEATURE_GROUPS:                  return false;
         case FEATURE_GROUPINGS:               return false;
-        case FEATURE_GROUPMEMBERSONLY:        return true;
-        case FEATURE_MOD_INTRO:               return true;
+        case FEATURE_GROUPMEMBERSONLY:        return false;
+        case FEATURE_MOD_INTRO:               return false;
         case FEATURE_COMPLETION_TRACKS_VIEWS: return false;
         case FEATURE_GRADE_HAS_GRADE:         return false;
         case FEATURE_GRADE_OUTCOMES:          return false;
         case FEATURE_MOD_ARCHETYPE:           return MOD_ARCHETYPE_RESOURCE;
-        case FEATURE_BACKUP_MOODLE2:          return true;
+        case FEATURE_BACKUP_MOODLE2:          return false;
         case FEATURE_NO_VIEW_LINK:            return true;
         default: return null;
     }
 }
-
-/**
- * Register the ability to handle drag and drop file uploads
- * @return array containing details of the files / types the mod can handle
- */
-//function library_dndupload_register() {
-//    $strdnd = get_string('dnduploadlibrary', 'mod_library');
-//    if (get_config('library', 'dndmedia')) {
-//        $mediaextensions = file_get_typegroup('extension', 'web_image');
-//        $files = array();
-//        foreach ($mediaextensions as $extn) {
-//            $extn = trim($extn, '.');
-//            $files[] = array('extension' => $extn, 'message' => $strdnd);
-//        }
-//        $ret = array('files' => $files);
-//    } else {
-//        $ret = array();
-//    }
-//
-//    $strdndtext = get_string('dnduploadlibrarytext', 'mod_library');
-//    return array_merge($ret, array('types' => array(
-//        array('identifier' => 'text/html', 'message' => $strdndtext, 'noname' => true),
-//        array('identifier' => 'text', 'message' => $strdndtext, 'noname' => true)
-//    )));
-//}
-
-/**
- * Handle a file that has been uploaded
- * @param object $uploadinfo details of the file / content that has been uploaded
- * @return int instance id of the newly created mod
- */
-//function library_dndupload_handle($uploadinfo) {
-//    global $USER;
-//
-//    // Gather the required info.
-//    $data = new stdClass();
-//    $data->course = $uploadinfo->course->id;
-//    $data->name = $uploadinfo->displayname;
-//    $data->intro = '';
-//    $data->introformat = FORMAT_HTML;
-//    $data->coursemodule = $uploadinfo->coursemodule;
-//
-//    // Extract the first (and only) file from the file area and add it to the library as an img tag.
-//    if (!empty($uploadinfo->draftitemid)) {
-//        $fs = get_file_storage();
-//        $draftcontext = context_user::instance($USER->id);
-//        $context = context_module::instance($uploadinfo->coursemodule);
-//        $files = $fs->get_area_files($draftcontext->id, 'user', 'draft', $uploadinfo->draftitemid, '', false);
-//        if ($file = reset($files)) {
-//            if (file_mimetype_in_typegroup($file->get_mimetype(), 'web_image')) {
-//                // It is an image - resize it, if too big, then insert the img tag.
-//                $config = get_config('library');
-//                $data->intro = library_generate_resized_image($file, $config->dndresizewidth, $config->dndresizeheight);
-//            } else {
-//                // We aren't supposed to be supporting non-image types here, but fallback to adding a link, just in case.
-//                $url = moodle_url::make_draftfile_url($file->get_itemid(), $file->get_filepath(), $file->get_filename());
-//                $data->intro = html_writer::link($url, $file->get_filename());
-//            }
-//            $data->intro = file_save_draft_area_files($uploadinfo->draftitemid, $context->id, 'mod_library', 'intro', 0,
-//                                                      null, $data->intro);
-//        }
-//    } else if (!empty($uploadinfo->content)) {
-//        $data->intro = $uploadinfo->content;
-//        if ($uploadinfo->type != 'text/html') {
-//            $data->introformat = FORMAT_PLAIN;
-//        }
-//    }
-//
-//    return library_add_instance($data, null);
-//}
-
-/**
- * Resize the image, if required, then generate an img tag and, if required, a link to the full-size image
- * @param stored_file $file the image file to process
- * @param int $maxwidth the maximum width allowed for the image
- * @param int $maxheight the maximum height allowed for the image
- * @return string HTML fragment to add to the library
- */
-//function library_generate_resized_image(stored_file $file, $maxwidth, $maxheight) {
-//    global $CFG;
-//
-//    $fullurl = moodle_url::make_draftfile_url($file->get_itemid(), $file->get_filepath(), $file->get_filename());
-//    $link = null;
-//    $attrib = array('alt' => $file->get_filename(), 'src' => $fullurl);
-//
-//    if ($imginfo = $file->get_imageinfo()) {
-//        // Work out the new width / height, bounded by maxwidth / maxheight
-//        $width = $imginfo['width'];
-//        $height = $imginfo['height'];
-//        if (!empty($maxwidth) && $width > $maxwidth) {
-//            $height *= (float)$maxwidth / $width;
-//            $width = $maxwidth;
-//        }
-//        if (!empty($maxheight) && $height > $maxheight) {
-//            $width *= (float)$maxheight / $height;
-//            $height = $maxheight;
-//        }
-//
-//        $attrib['width'] = $width;
-//        $attrib['height'] = $height;
-//
-//        // If the size has changed and the image is of a suitable mime type, generate a smaller version
-//        if ($width != $imginfo['width']) {
-//            $mimetype = $file->get_mimetype();
-//            if ($mimetype === 'image/gif' or $mimetype === 'image/jpeg' or $mimetype === 'image/png') {
-//                require_once($CFG->libdir.'/gdlib.php');
-//                $tmproot = make_temp_directory('mod_library');
-//                $tmpfilepath = $tmproot.'/'.$file->get_contenthash();
-//                $file->copy_content_to($tmpfilepath);
-//                $data = generate_image_thumbnail($tmpfilepath, $width, $height);
-//                unlink($tmpfilepath);
-//
-//                if (!empty($data)) {
-//                    $fs = get_file_storage();
-//                    $record = array(
-//                        'contextid' => $file->get_contextid(),
-//                        'component' => $file->get_component(),
-//                        'filearea'  => $file->get_filearea(),
-//                        'itemid'    => $file->get_itemid(),
-//                        'filepath'  => '/',
-//                        'filename'  => 's_'.$file->get_filename(),
-//                    );
-//                    $smallfile = $fs->create_file_from_string($record, $data);
-//
-//                    // Replace the image 'src' with the resized file and link to the original
-//                    $attrib['src'] = moodle_url::make_draftfile_url($smallfile->get_itemid(), $smallfile->get_filepath(),
-//                                                                    $smallfile->get_filename());
-//                    $link = $fullurl;
-//                }
-//            }
-//        }
-//
-//    } else {
-//        // Assume this is an image type that get_imageinfo cannot handle (e.g. SVG)
-//        $attrib['width'] = $maxwidth;
-//    }
-//
-//    $img = html_writer::empty_tag('img', $attrib);
-//    if ($link) {
-//        return html_writer::link($link, $img);
-//    } else {
-//        return $img;
-//    }
-//}
