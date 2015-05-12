@@ -184,13 +184,13 @@ function mod_library_cm_info_view(cm_info $cm) {
   text-decoration: none;
 }
 </style>
-<h3><strong>Library Resources</strong></h3>
+<p><strong>'. get_string('headline', 'library') . '</strong></p>
 
 <table>
    <tbody>
       <tr>
-         <td style="float:right; padding: 3px;"><a href="http://askus.lib.lsu.edu/"><img src="' . $CFG->wwwroot  . '/mod/library/pix/LaptopUser_icon2.svg" padding = "2px" width = "50px" alt="Ask the Library" border="0"></a></td>
-         <td><strong>  For assistance, call (225-578-8875), <a href="http://askus.lib.lsu.edu/" target="_blank"> chat, text, or email a librarian </a></strong></td>
+         <td style="float:right; padding: 3px;"><a href="'.get_string('alt_image_text', 'library') .'"><img src="' . $CFG->wwwroot  . '/mod/library/pix/LaptopUser_icon2.svg" padding = "2px" width = "50px" alt="'. get_string('alt_image_text','library').'" border="0"></a></td>
+         <td>'.get_string('library_activity_description', 'library') . '</td>
       </tr>
    </tbody>
 </table>
