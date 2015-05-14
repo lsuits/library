@@ -28,7 +28,7 @@ $string['library:addinstance'] = 'Add a new Library Research Links Resource';
 
 $string['librarytext'] = 'Description (NOT required)';
 
-$string['modulename'] = 'LSU Library Research';
+$string['modulename'] = 'Research Help';
 
 $string['modulename_help'] = 'LSU Libraries Research Help connects students with librarian assistance. This activity can be placed alongside research-based course assignments to encourage students to consult librarians. Librarians can help students in focusing a research topic, developing a search strategy, locating and evaluating sources, and using these resources effectively and ethically.';
 
@@ -44,4 +44,4 @@ $string['library_URL'] = 'http://askus.lib.lsu.edu/';
 
 $string['alt_image_text'] = 'Ask the Library';
 
-$string['library_activity_description'] = '<strong> <a href="" target="_blank"> For assistance, call (225-578-8875), chat, text, or email a librarian </strong></a>- Consult with a librarian by calling (225-578-8875), or through chat, text, or email. Assistance includes focusing a research topic, developing a search strategy, locating and evaluating sources, and using these resources effectively and ethically.';
+$string['library_activity_description'] = '<strong> <a href="http://askus.lib.lsu.edu/" target="_blank"> Consult with a librarian by calling (225-578-8875), or through chat, text, or email. </strong></a>Assistance includes focusing a research topic, developing a search strategy, locating and evaluating sources, and using these resources effectively and ethically.';
